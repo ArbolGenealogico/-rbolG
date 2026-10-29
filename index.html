@@ -80,15 +80,6 @@
       background: var(--surface);
     }
     .error { min-height: 22px; margin: 10px 0 0; color: var(--danger); font-size: 13px; }
-    .privacy-note {
-      margin-top: 30px;
-      border-left: 3px solid var(--gold);
-      padding: 11px 14px;
-      color: #d7c78f;
-      background: rgba(223,193,110,.08);
-      font-size: 12px;
-      line-height: 1.55;
-    }
     .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
     .topbar {
       display: flex;
@@ -144,10 +135,10 @@
       <p class="lead">Ingresa la contraseña para abrir el árbol genealógico Lepe.</p>
       <form id="password-form" class="password-form">
         <input id="password" type="password" autocomplete="current-password" placeholder="Contraseña" aria-label="Contraseña" required>
+        <button id="toggle-password" type="button" class="ghost" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
         <button class="primary" type="submit">Continuar</button>
       </form>
       <p id="password-error" class="error" role="alert"></p>
-      <p class="privacy-note">Aviso: GitHub Pages es un sitio estático. Esta contraseña solo bloquea la interfaz; los archivos JSON publicados siguen siendo descargables. No publiques datos que deban mantenerse privados.</p>
     </section>
   </main>
 
@@ -186,6 +177,7 @@
     const ACCESS_PASSWORD = "LepeXD";
     const passwordForm = document.getElementById("password-form");
     const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("toggle-password");
     const passwordError = document.getElementById("password-error");
     const gate = document.getElementById("gate");
     const app = document.getElementById("app");
@@ -196,9 +188,18 @@
     let familyData = null;
     let selectedIds = [];
 
+    togglePassword.addEventListener("click", () => {
+      const mostrar = passwordInput.type === "password";
+      passwordInput.type = mostrar ? "text" : "password";
+      togglePassword.textContent = mostrar ? "Ocultar" : "Mostrar";
+      togglePassword.setAttribute("aria-label", `${mostrar ? "Ocultar" : "Mostrar"} contraseña`);
+      togglePassword.setAttribute("aria-pressed", String(mostrar));
+      passwordInput.focus();
+    });
+
     passwordForm.addEventListener("submit", async event => {
       event.preventDefault();
-      if (passwordInput.value !== ACCESS_PASSWORD) {
+      if (passwordInput.value.trim().toLocaleLowerCase() !== ACCESS_PASSWORD.toLocaleLowerCase()) {
         passwordError.textContent = "La contraseña no es correcta.";
         passwordInput.select();
         return;
